@@ -4,38 +4,45 @@
   let menu = [
     {
       id: 0,
+      icon: "💚",
       name: "Cauliflower florets",
       time: 7,
     },
     {
       id: 1,
+      icon: "🥕",
       name: "Sliced carrots",
-      time: 8,
+      time: 15,
     },
     {
       id: 2,
+      icon: "🥦",
       name: "Broccoli florets",
-      time: 5,
+      time: 7,
     },
     {
       id: 3,
+      icon: "💚",
       name: "Green beans",
-      time: 3,
+      time: 10,
     },
     {
       id: 4,
+      icon: "🥔",
       name: "Big potatoes",
-      time: 45,
+      time: 40,
     },
     {
       id: 5,
+      icon: "🥔",
       name: "Small potatoes",
       time: 20,
     },
     {
       id: 6,
+      icon: "💚",
       name: "Brussels sprouts",
-      time: 9,
+      time: 12,
     },
   ];
   function Batch(veggies, cookTime, i) {
@@ -61,7 +68,7 @@
     veggies = order(veggies);
     let groups = veggies.reduce(function(r, e, i) {
       if (i != 0) {
-        ( veggies[i - 1].time - e.time < 2) ? r[r.length - 1].push(e) : r.push([e])
+        ( veggies[i - 1].time - e.time < 4) ? r[r.length - 1].push(e) : r.push([e])
       } else {
         r.push([e])
       }
@@ -88,12 +95,13 @@
   }
 </script>
 
+<h1>💨 Steam calculator</h1>
 <h2>Select vegetables</h2>
 
 {#each menu as veggie (veggie.id)}
   <label>
     <input type="checkbox" bind:group={veggies} value={veggie.name} />
-    {veggie.name} ({veggie.time} min)
+    {veggie.icon} {veggie.name} ({veggie.time} min)
   </label>
 {/each}
 
@@ -109,36 +117,3 @@
   </ul>
 </div>
 {/if}
-
-<h2>About</h2>
-
-<p>
-  Order is calculated as:
-
-  <i>
-    start with the longest cooking, try to group veggies to minimize opening the
-    tap. Count time to re-heat after a tap opening and time to warm veggies.
-    Suggest two batches if more time efficient.
-  </i>
-</p>
-<ul>
-  <li>start with the longest</li>
-  <li>
-    For the next (can be added at the same moment or require opening the tap):
-    <ul>
-      <li>
-        Is time similar to the previous?
-        <ul><li>Add at the same time</li></ul>
-      </li>
-      <li>
-        Is time shorter than the previous?
-        <ul>
-          <li>
-            New tap opening (add times to re-heat and veggie warming to all
-            previous veggies)
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
