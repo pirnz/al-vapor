@@ -9,6 +9,12 @@
       time: 7,
     },
     {
+      id: 7,
+      icon: "💚",
+      name: "Green asparagus",
+      time: 7,
+    },
+    {
       id: 1,
       icon: "🥕",
       name: "Sliced carrots",
