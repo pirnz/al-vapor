@@ -74,7 +74,7 @@
     veggies = order(veggies);
     let groups = veggies.reduce(function(r, e, i) {
       if (i != 0) {
-        ( veggies[i - 1].time - e.time < 4) ? r[r.length - 1].push(e) : r.push([e])
+        ( veggies[i - 1].time - e.time < 3) ? r[r.length - 1].push(e) : r.push([e])
       } else {
         r.push([e])
       }
