@@ -4,7 +4,7 @@
   let menu = [
     {
       id: 0,
-      icon: "💚",
+      icon: "🤍",
       name: "Cauliflower florets",
       time: 7,
     },
@@ -16,7 +16,7 @@
     },
     {
       id: 8,
-      icon: "💚",
+      icon: "🤍",
       name: "White asparagus",
       time: 20,
     },
