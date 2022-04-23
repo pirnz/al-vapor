@@ -15,6 +15,12 @@
       time: 7,
     },
     {
+      id: 8,
+      icon: "💚",
+      name: "White asparagus",
+      time: 20,
+    },
+    {
       id: 1,
       icon: "🥕",
       name: "Sliced carrots",
@@ -71,12 +77,17 @@
   }
 
   function cookTime(veggies) {
+    let minTime = 7;
     veggies = order(veggies);
     let groups = veggies.reduce(function(r, e, i) {
-      if (i != 0) {
-        ( veggies[i - 1].time - e.time < 3) ? r[r.length - 1].push(e) : r.push([e])
-      } else {
+      if (i == 0) {
         r.push([e])
+      } else {
+        if( (veggies[i - 1].time - e.time < 3) && e.time > minTime ) {
+          r[r.length - 1].push(e) 
+        } else { 
+          r.push([e])
+        }
       }
       if (i == veggies.length - 1) r = r.map(e => e.length == 1 ? e[0] : e)
       return r;
@@ -99,6 +110,8 @@
     }
     return batches;
   }
+
+
 </script>
 
 <h1>💨 Steam calculator</h1>
