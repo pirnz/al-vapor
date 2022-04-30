@@ -12,7 +12,7 @@
       id: 7,
       icon: "💚",
       name: "Green asparagus",
-      time: 7,
+      time: 5,
     },
     {
       id: 8,
