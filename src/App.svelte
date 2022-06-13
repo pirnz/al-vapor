@@ -65,32 +65,36 @@
     }`;
   }
 
-  function order(veggies) {
-    let menu = pantry.filter((veggie) => veggies.includes(veggie.name));
+  function sortVeggies(list) {
+    let menu = pantry.filter((veggie) => list.includes(veggie.name));
     menu.sort((a, b) => parseFloat(b.time) - parseFloat(a.time));
     return menu;
   }
 
-  function cookTime(veggies) {
-    veggies = order(veggies);
-    let groups = veggies.reduce(function(r, e, i) {
+  function groupVeggies(list) {
+    return list.reduce(function(r, e, i) {
       if (i != 0) {
-        ( veggies[i - 1].time - e.time < 3) ? r[r.length - 1].push(e) : r.push([e])
+        ( list[i - 1].time - e.time < 3) ? r[r.length - 1].push(e) : r.push([e])
       } else {
         r.push([e])
       }
-      if (i == veggies.length - 1) r = r.map(e => e.length == 1 ? e[0] : e)
+      if (i == list.length - 1) r = r.map(e => e.length == 1 ? e[0] : e)
       return r;
-    }, [])
+    }, []);
+  }
+
+  function cookTime(veggies) {
+    let menu = sortVeggies(veggies);
+    let groups = groupVeggies(menu);
     
     let batches = groups.map( (group, i, a) => {
       let isFirst = ( i == 0 ) ? true : false;
       if (!group.length)
         return new Batch([group.name], group.time, isFirst);
       else {
-        let veggies = group.map(veggie => (veggie.name))
+        let nameList = group.map(veggie => (veggie.name))
         let cookTime = (group.map(veggie => (veggie.time)).reduce((a,b) => a + b, 0)) / group.length
-        return new Batch(veggies, cookTime, isFirst);
+        return new Batch(nameList, cookTime, isFirst);
       }
     })
 
@@ -115,7 +119,9 @@
 <br>
 <a href="">Configuration</a>
 <label>
+  Heat time: 
 	<input type=number bind:value={heatTime} min=0 max=8>
+  minutes
 </label>
 
 {#if veggies.length === 0}
