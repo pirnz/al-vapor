@@ -1,7 +1,7 @@
 <script>
   let veggies = [];
-  
-  let menu = [
+  let heatTime = 2;  
+  let pantry = [
     {
       id: 0,
       icon: "💚",
@@ -51,10 +51,11 @@
       time: 12,
     },
   ];
-  function Batch(veggies, cookTime, i) {
+
+  function Batch(veggies, cookTime, isFirst) {
     this.veggies = veggies;
     this.cookTime = cookTime;
-    this.heatTime = i*2;
+    this.heatTime = isFirst ? 0 : heatTime;
   }
 
   function join(veggies) {
@@ -65,9 +66,9 @@
   }
 
   function order(veggies) {
-    let cook = menu.filter((veggie) => veggies.includes(veggie.name));
-    cook.sort((a, b) => parseFloat(b.time) - parseFloat(a.time));
-    return cook;
+    let menu = pantry.filter((veggie) => veggies.includes(veggie.name));
+    menu.sort((a, b) => parseFloat(b.time) - parseFloat(a.time));
+    return menu;
   }
 
   function cookTime(veggies) {
@@ -83,13 +84,13 @@
     }, [])
     
     let batches = groups.map( (group, i, a) => {
-      let heatTime = ( i == 0 ) ? 0 : 1;
+      let isFirst = ( i == 0 ) ? true : false;
       if (!group.length)
-        return new Batch([group.name], group.time, heatTime);
+        return new Batch([group.name], group.time, isFirst);
       else {
         let veggies = group.map(veggie => (veggie.name))
         let cookTime = (group.map(veggie => (veggie.time)).reduce((a,b) => a + b, 0)) / group.length
-        return new Batch(veggies, cookTime, heatTime);
+        return new Batch(veggies, cookTime, isFirst);
       }
     })
 
@@ -104,12 +105,18 @@
 <h1>💨 Steam calculator</h1>
 <h2>Select vegetables</h2>
 
-{#each menu as veggie (veggie.id)}
+{#each pantry as veggie (veggie.id)}
   <label>
     <input type="checkbox" bind:group={veggies} value={veggie.name} />
     {veggie.icon} {veggie.name} ({veggie.time} min)
   </label>
 {/each}
+
+<br>
+<a href="">Configuration</a>
+<label>
+	<input type=number bind:value={heatTime} min=0 max=8>
+</label>
 
 {#if veggies.length === 0}
   <p>Please select at least one veggie</p>
