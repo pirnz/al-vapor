@@ -12,6 +12,12 @@ export const pantry = [
       "time": 7
     },
     {
+      id: 8,
+      icon: "🤍",
+      name: "White asparagus",
+      time: 20,
+    },
+    {
       "id": 1,
       "icon": "🥕",
       "name": "Sliced carrots",

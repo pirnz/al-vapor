@@ -17,36 +17,37 @@
     }`;
   }
 
-  function sortVeggies(list) {
-    let menu = pantry.filter((veggie) => list.includes(veggie.name));
-    menu.sort((a, b) => parseFloat(b.time) - parseFloat(a.time));
-    return menu;
-  }
-
-  function groupVeggies(list) {
-    return list.reduce(function(r, e, i) {
-      if (i != 0) {
-        ( list[i - 1].time - e.time < tolerance) ? r[r.length - 1].push(e) : r.push([e])
-      } else {
-        r.push([e])
-      }
-      if (i == list.length - 1) r = r.map(e => e.length == 1 ? e[0] : e)
-      return r;
-    }, []);
+  function order(veggies) {
+    let cook = pantry.filter((veggie) => veggies.includes(veggie.name));
+    cook.sort((a, b) => parseFloat(b.time) - parseFloat(a.time));
+    return cook;
   }
 
   function cookTime(veggies) {
-    let menu = sortVeggies(veggies);
-    let groups = groupVeggies(menu);
+    let minTime = 7;
+    veggies = order(veggies);
+    let groups = veggies.reduce(function(r, e, i) {
+      if (i == 0) {
+        r.push([e])
+      } else {
+        if( (veggies[i - 1].time - e.time < tolerance) && e.time > minTime ) {
+          r[r.length - 1].push(e) 
+        } else { 
+          r.push([e])
+        }
+      }
+      if (i == veggies.length - 1) r = r.map(e => e.length == 1 ? e[0] : e)
+      return r;
+    }, [])
     
     let batches = groups.map( (group, i, a) => {
-      let isFirst = ( i == 0 ) ? true : false;
+      let heatTime = ( i == 0 ) ? 0 : 1;
       if (!group.length)
-        return new Batch([group.name], group.time, isFirst);
+        return new Batch([group.name], group.time, heatTime);
       else {
-        let nameList = group.map(veggie => (veggie.name))
+        let veggies = group.map(veggie => (veggie.name))
         let cookTime = (group.map(veggie => (veggie.time)).reduce((a,b) => a + b, 0)) / group.length
-        return new Batch(nameList, cookTime, isFirst);
+        return new Batch(veggies, cookTime, heatTime);
       }
     })
 
@@ -56,6 +57,8 @@
     }
     return batches;
   }
+
+
 </script>
 
 <h1>💨 Steam calculator</h1>
