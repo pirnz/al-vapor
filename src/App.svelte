@@ -1,56 +1,8 @@
 <script>
+  import {pantry} from './pantry.js';
   let veggies = [];
-  let heatTime = 2;  
-  let pantry = [
-    {
-      id: 0,
-      icon: "💚",
-      name: "Cauliflower florets",
-      time: 7,
-    },
-    {
-      id: 7,
-      icon: "💚",
-      name: "Green asparagus",
-      time: 7,
-    },
-    {
-      id: 1,
-      icon: "🥕",
-      name: "Sliced carrots",
-      time: 15,
-    },
-    {
-      id: 2,
-      icon: "🥦",
-      name: "Broccoli florets",
-      time: 7,
-    },
-    {
-      id: 3,
-      icon: "💚",
-      name: "Green beans",
-      time: 10,
-    },
-    {
-      id: 4,
-      icon: "🥔",
-      name: "Big potatoes",
-      time: 40,
-    },
-    {
-      id: 5,
-      icon: "🥔",
-      name: "Small potatoes",
-      time: 20,
-    },
-    {
-      id: 6,
-      icon: "💚",
-      name: "Brussels sprouts",
-      time: 12,
-    },
-  ];
+  let heatTime = 2;
+  let tolerance = 2;
 
   function Batch(veggies, cookTime, isFirst) {
     this.veggies = veggies;
@@ -74,7 +26,7 @@
   function groupVeggies(list) {
     return list.reduce(function(r, e, i) {
       if (i != 0) {
-        ( list[i - 1].time - e.time < 3) ? r[r.length - 1].push(e) : r.push([e])
+        ( list[i - 1].time - e.time < tolerance) ? r[r.length - 1].push(e) : r.push([e])
       } else {
         r.push([e])
       }
@@ -117,12 +69,18 @@
 {/each}
 
 <br>
-<a href="">Configuration</a>
+<h3 href="">Configuration</h3>
 <label>
   Heat time: 
 	<input type=number bind:value={heatTime} min=0 max=8>
   minutes
 </label>
+<label>
+  Heat time: 
+	<input type=number bind:value={tolerance} min=0 max=8>
+  minutes
+</label>
+<button>Calculate</button>
 
 {#if veggies.length === 0}
   <p>Please select at least one veggie</p>
@@ -135,4 +93,6 @@
     {/each}
   </ul>
 </div>
+
 {/if}
+
