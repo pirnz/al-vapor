@@ -3,7 +3,7 @@
     export let opts: Opts;
     let batches: Batch[];
     $: heatTime =
-        Math.round((((10 - opts.heatPower) / 10) * 4 + 0.5) * 100) / 100;
+        Math.round((((10 - opts.heatPower) / 10) * 3 + 0.5) * 100) / 100;
     $: tolerance = Math.round(((opts.tolerance / 10) * 6 + 1.5) * 100) / 100;
 
     function join(veggies: Veggie[]): string {

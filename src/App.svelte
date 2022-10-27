@@ -4,6 +4,7 @@
 	let opts = {
         heatPower: 2,
         tolerance: 3,
+        quantity: 5,
         veggies: []
     };
     // let res;
