@@ -6,7 +6,7 @@ export interface Batch {
 };
 export interface Veggie {
     id: number;
-    icon: string;
+    img: string;
     name: string;
     time: number;
     checked: boolean;

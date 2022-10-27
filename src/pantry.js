@@ -1,65 +1,65 @@
 export const pantry = [
     {
       "id": 0,
-      "icon": "💚",
       "name": "Cauliflower florets",
       "time": 7,
-      "checked": false
+      "checked": false,
+      "img": "coliflor"
     },
     {
       "id": 1,
-      "icon": "🥕",
       "name": "Sliced carrots",
-      "time": 17,
-      "checked": false
+      "time": 18,
+      "checked": false,
+      "img": "zanahoria"
     },
     {
       "id": 2,
-      "icon": "🥦",
       "name": "Broccoli florets",
-      "time": 7,
-      "checked": false
+      "time": 8,
+      "checked": false,
+      "img": "brocoli"
     },
     {
       "id": 3,
-      "icon": "💚",
       "name": "Green beans",
       "time": 13,
-      "checked": false
+      "checked": false,
+      "img": "judias-verdes"
     },
     {
       "id": 4,
-      "icon": "🥔",
       "name": "Big potatoes",
       "time": 40,
-      "checked": false
+      "checked": false,
+      "img": "patata"
     },
     {
       "id": 5,
-      "icon": "🥔",
       "name": "Small potatoes",
       "time": 20,
-      "checked": false
+      "checked": false,
+      "img": "patata"
     },
     {
       "id": 6,
-      "icon": "💚",
       "name": "Brussels sprouts",
       "time": 12,
-      "checked": false
+      "checked": false,
+      "img": "col"
     },
     {
       "id": 7,
-      "icon": "💚",
       "name": "Green asparagus",
       "time": 7,
-      "checked": false
+      "checked": false,
+      "img": "esparragos-verdes"
     },
     {
       id: 8,
-      icon: "🤍",
       name: "White asparagus",
       time: 20,
-      "checked": false
+      "checked": false,
+      "img": "esparragos-verdes"
     }
   ]
