@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Input from './Input.svelte';
     import Output from './Output.svelte';
-  import type { Opts } from './types';
+    import type { Opts } from './types';
 	let opts: Opts;
     // let res;
     // function refresh(opts) {
