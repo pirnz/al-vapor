@@ -12,9 +12,6 @@ export interface Veggie {
     checked: boolean;
 }
 export interface Opts {
-    heatPower: number;
-    tolerance: number;
-    quantity: number;
     veggies: Veggie[];
     options: Option[];
 }
