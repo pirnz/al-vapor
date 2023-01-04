@@ -14,5 +14,14 @@ export interface Veggie {
 export interface Opts {
     heatPower: number;
     tolerance: number;
+    quantity: number;
     veggies: Veggie[];
+    options: Option[];
+}
+
+export interface Option {
+    id: string;
+    name: string;
+    description: string;
+    value: number;
 }

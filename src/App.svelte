@@ -1,12 +1,8 @@
 <script lang="ts">
 	import Input from './Input.svelte';
     import Output from './Output.svelte';
-	let opts = {
-        heatPower: 2,
-        tolerance: 3,
-        quantity: 5,
-        veggies: []
-    };
+  import type { Opts } from './types';
+	let opts: Opts;
     // let res;
     // function refresh(opts) {
     //     return JSON.stringify(opts);
