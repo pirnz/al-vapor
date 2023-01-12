@@ -5,6 +5,7 @@
     export let opts: Opts;
     let localPantry: Veggie[] = pantry;
     let localOptions: Option[] = options;
+    opts.options = localOptions;
     function refreshOpts(event: SubmitEvent) {
         let i = localPantry.findIndex((veg) => {
             if (veg.id.toString() == event.currentTarget.id) {
