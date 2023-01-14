@@ -3,16 +3,18 @@
     import Output from './Output.svelte';
     import { options } from "./options.js";
     import type { Opts } from './types';
-	let opts: Opts;
-    opts.options = options;
-    // let res;
-    // function refresh(opts) {
-    //     return JSON.stringify(opts);
-    // }
-	// //$: view = opts.veggies.length > 0 ? JSON.stringify(opts) : 'Choose your veggies';
-    // $: res = refresh(opts)
+	let opts: Opts = {
+        options: options,
+        veggies: []
+    };
 </script>
 
-<h1>Steam time calculator</h1>
+<h1 class="title">Steam time calculator</h1>
 <Input bind:opts={opts}/>
 <Output bind:opts={opts}/>
+
+<style>
+    .title {
+        margin: 0;
+    }
+    </style>

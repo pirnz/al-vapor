@@ -37,6 +37,8 @@
             </button>
         </div>
     {/each}
+</div>
+<div  class="wrapper">
     {#each localOptions as option (option.id)}
         <div>
             <p>
@@ -61,8 +63,8 @@
   flex-direction: column;
     }
     .vegetables {
-        max-height: 100px;
-        max-width: 100px;
+        max-height: 60px;
+        max-width: 60px;
     }
     .unchecked {
         background-color: transparent;
@@ -78,13 +80,12 @@
         margin-bottom: 0;
     }
     .wrapper {
-        list-style: none;
         margin: 2em;
         display: grid;
-        gap: 20px;
+        gap: 10px;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
     .label {
-        margin-top: 0;
+        margin: 0;
     }
 </style>
