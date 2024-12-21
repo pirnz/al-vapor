@@ -18,7 +18,7 @@
         opts.options = localOptions;
     }
 </script>
-
+<h4>Selecciona las verduras:</h4>
 <div class="wrapper">
     {#each localPantry as veggie (veggie.id)}
         <div class="element">
@@ -38,7 +38,7 @@
         </div>
     {/each}
 </div>
-<div  class="wrapper">
+<!--<div  class="wrapper">
     {#each localOptions as option (option.id)}
         <div>
             <p>
@@ -55,7 +55,7 @@
         </div>
     {/each}
     
-</div>
+</div> -->
 
 <style>
     .element {

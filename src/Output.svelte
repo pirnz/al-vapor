@@ -56,23 +56,14 @@
     $: batches = calcBatches(opts);
 </script>
 
-<h1>Result:</h1>
-
 {#if batches.length === 0}
-    <p>Please select at least one veggie</p>
+    <p></p>
 {:else}
     <div>
         <ul>
-            <li>Heat time: {heatTime} min</li>
-            <li>Tolerance: {tolerance} min</li>
-            <li>Number of batches: {batches.length}</li>
-        </ul>
-        <p>Batches:</p>
-        <ul>
             {#each batches as batch}
                 <li>
-                    Add {batch.ingredients}, for {batch.time} minutes ({batch.totalTime}
-                    minutes remaining)
+                    Añade: {batch.ingredients}, y deja hervir {batch.time} minutos (quedan {batch.totalTime} minutos)
                 </li>
             {/each}
         </ul>

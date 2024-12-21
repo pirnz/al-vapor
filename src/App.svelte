@@ -9,7 +9,7 @@
     };
 </script>
 
-<h1 class="title">Steam time calculator</h1>
+<h1 class="title">Al-vapor</h1>
 <Input bind:opts={opts}/>
 <Output bind:opts={opts}/>
 
