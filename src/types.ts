@@ -10,6 +10,12 @@ export interface Veggie {
     name: string;
     time: number;
     checked: boolean;
+    preparations: Preparation[];
+}
+export interface Preparation {
+    id: number;
+    time: number;
+    name: string;
 }
 export interface Opts {
     veggies: Veggie[];
@@ -21,4 +27,7 @@ export interface Option {
     name: string;
     description: string;
     value: number;
+    min: number;
+    max: number;
+    step: number;
 }

@@ -2,11 +2,10 @@
     import type { Opts, Batch, Veggie } from "./types";
     export let opts: Opts;
     let batches: Batch[];
-    $: tolerancia = opts.options.filter((opt) => {return opt.id == "tolerancia" })[0].value;
+    let potValues = [1.2, 1, 0.8]
     $: potencia = opts.options.filter((opt) => {return opt.id == "potencia" })[0].value;
-    $: heatTime =
-        Math.round((((10 - potencia) / 10) * 3 + 0.5) * 100) / 100;
-    $: tolerance = Math.round(((tolerancia / 10) * 6 + 1.5) * 100) / 100;
+    $: heatTime = potValues[ potencia - 1 ];
+    $: tolerance = 3;
 
     function join(veggies: Veggie[]): string {
         if (veggies.length === 1) return veggies[0].name;
@@ -25,9 +24,9 @@
                 i == 0
                     ? groups[i][0].time
                     : groups[i][0].time - batches[i - 1].totalTime;
-            time += heatTime;
+            time *= heatTime;
             let totalTime: number = groups[i][0].time;
-            totalTime += heatTime;
+            totalTime *= heatTime;
             batches.push({
                 ingredients: join(groups[i]),
                 time: Math.round(time),
