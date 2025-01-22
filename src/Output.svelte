@@ -75,10 +75,11 @@
         <ol>
             {#each batches as batch}
                 <li>
-                    {batch.ingredients} <br>💨 🕐 {batch.time} minutos
+                    {batch.ingredients} <br>💨 🕐 espera {batch.time} minutos
                 </li>
             {/each}
         </ol>
+        Listo!
     </div>
 {/if}
 
