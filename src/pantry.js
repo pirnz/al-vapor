@@ -2,6 +2,7 @@ export const pantry = [
     {
       "id": 0,
       "name": "Salmón",
+      "article": "El",
       "time": 10,
       "checked": false,
       "img": "salmon.jpg",
@@ -16,6 +17,7 @@ export const pantry = [
     {
       "id": 1,
       "name": "Zanahorias",
+      "article": "Las",
       "time": 18,
       "checked": false,
       "img": "zanahoria.svg",
@@ -33,7 +35,8 @@ export const pantry = [
     },
     {
       "id": 2,
-      "name": "Brocoli en floretes",
+      "name": "Brócoli en floretes",
+      "article": "El",
       "time": 8,
       "checked": false,
       "img": "brocoli.svg",
@@ -47,7 +50,8 @@ export const pantry = [
     },
     {
       "id": 3,
-      "name": "Judias verdes",
+      "name": "Judías verdes",
+      "article": "Las",
       "time": 13,
       "checked": false,
       "img": "judias-verdes.svg",
@@ -66,6 +70,7 @@ export const pantry = [
     {
       "id": 4,
       "name": "Patatas",
+      "article": "Las",
       "time": 40,
       "checked": false,
       "img": "patata.svg",
@@ -85,6 +90,7 @@ export const pantry = [
     {
       "id": 5,
       "name": "Coles de Bruselas",
+      "article": "Las",
       "time": 12,
       "checked": false,
       "img": "coles-de-bruselas.webp",
@@ -103,7 +109,8 @@ export const pantry = [
     },
     {
       "id": 7,
-      "name": "Esparragos verdes",
+      "name": "Espárragos verdes",
+      "article": "Las",
       "time": 7,
       "checked": false,
       "img": "esparragos-verdes.svg",

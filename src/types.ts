@@ -8,6 +8,7 @@ export interface Veggie {
     id: number;
     img: string;
     name: string;
+    article: string;
     time: number;
     checked: boolean;
     preparations: Preparation[];

@@ -10,8 +10,9 @@
 </script>
 
 <h1 class="title">Al-vapor</h1>
-<Input bind:opts={opts}/>
+<h4>Elige los ingredientes y te dirá en que orden añadirlos para que todo esté en su punto al mismo tiempo:</h4>
 <Output bind:opts={opts}/>
+<Input bind:opts={opts}/>
 
 <style>
     .title {

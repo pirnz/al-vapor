@@ -47,7 +47,6 @@
         opts.options = localOptions;
     }
 </script>
-<h4>Selecciona las verduras:</h4>
 <div class="wrapper">
     {#each localPantry as veggie (veggie.id)}
         <div class="element">
@@ -131,7 +130,7 @@
         margin: 2em;
         display: grid;
         gap: 10px;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
     }
     .label {
         margin: 0;

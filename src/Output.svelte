@@ -2,19 +2,31 @@
     import type { Opts, Batch, Veggie } from "./types";
     export let opts: Opts;
     let batches: Batch[];
-    let potValues = [1.2, 1, 0.8]
-    $: potencia = opts.options.filter((opt) => {return opt.id == "potencia" })[0].value;
-    $: heatTime = potValues[ potencia - 1 ];
+    let potValues = [1.2, 1, 0.8];
+    $: potencia = opts.options.filter((opt) => {
+        return opt.id == "potencia";
+    })[0].value;
+    $: heatTime = potValues[potencia - 1];
     $: tolerance = 3;
 
-    function join(veggies: Veggie[]): string {
-        if (veggies.length === 1) return veggies[0].name;
-        let names = veggies.map((e) => {
-            return e.name;
+    function getIngredientsNames(veggies: Veggie[]): string {
+        if (veggies.length === 1)
+            return (
+                veggies[0].article +
+                " " +
+                veggies[0].name[0].toLowerCase() +
+                veggies[0].name.slice(1)
+            );
+        let names = veggies.map((e, i) => {
+            return i == 0
+                ? e.article + " " + e.name[0].toLowerCase() + e.name.slice(1)
+                : e.article[0].toLowerCase() +
+                      e.article.slice(1) +
+                      " " +
+                      e.name[0].toLowerCase() +
+                      e.name.slice(1);
         });
-        return `${names.slice(0, -1).join(", ")} and ${
-            names[names.length - 1]
-        }`;
+        return `${names.slice(0, -1).join(", ")} y ${names[names.length - 1]}`;
     }
 
     function group2batch(groups: Veggie[][]): Batch[] {
@@ -28,10 +40,10 @@
             let totalTime: number = groups[i][0].time;
             totalTime *= heatTime;
             batches.push({
-                ingredients: join(groups[i]),
+                ingredients: getIngredientsNames(groups[i]),
                 time: Math.round(time),
                 index: i,
-                totalTime: Math.round(totalTime)
+                totalTime: Math.round(totalTime),
             });
         }
         return batches;
@@ -59,12 +71,27 @@
     <p></p>
 {:else}
     <div>
-        <ul>
+        <p>Tiempo estimado: {batches[0].totalTime} minutos</p>
+        <ol>
             {#each batches as batch}
                 <li>
-                    Añade: {batch.ingredients}, y deja hervir {batch.time} minutos (quedan {batch.totalTime} minutos)
+                    {batch.ingredients} <br>💨 🕐 {batch.time} minutos
                 </li>
             {/each}
-        </ul>
+        </ol>
     </div>
 {/if}
+
+<style>
+    ol {
+        counter-reset: list-counter;
+        list-style: none;
+    }
+    ol li {
+        counter-increment: list-counter;
+    }
+    ol li::before {
+        content: counter(list-counter) "º: ";
+        font-weight: bold;
+    }
+</style>
