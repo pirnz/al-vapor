@@ -74,10 +74,13 @@
         <p>Tiempo estimado: {batches[0].totalTime} minutos</p>
         <ol>
             {#each batches as batch}
-                <li>
-                    {batch.ingredients} <br>💨 🕐 {batch.time} minutos
+                <li class="order">
+                    {batch.ingredients} <br>💨 🕐 espera {batch.time} minutos
                 </li>
             {/each}
+            <li>
+                y listo!
+            </li>
         </ol>
     </div>
 {/if}
@@ -87,10 +90,10 @@
         counter-reset: list-counter;
         list-style: none;
     }
-    ol li {
+    ol li.order {
         counter-increment: list-counter;
     }
-    ol li::before {
+    ol li.order::before  {
         content: counter(list-counter) "º: ";
         font-weight: bold;
     }
