@@ -82,6 +82,7 @@
                 y listo!
             </li>
         </ol>
+        Listo!
     </div>
 {/if}
 
