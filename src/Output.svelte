@@ -7,7 +7,7 @@
         return opt.id == "potencia";
     })[0].value;
     $: heatTime = potValues[potencia - 1];
-    $: tolerance = 3;
+    $: tolerance = 2;
 
     function getIngredientsNames(veggies: Veggie[]): string {
         if (veggies.length === 1)
