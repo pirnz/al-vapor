@@ -64,7 +64,7 @@
                 />
                 <p class="label">{veggie.name}</p>
                 {#if veggie.preparations.length > 1}
-                    <select name="preparations" value="{veggie.preparations[0].name}" id="preparations-{veggie.id.toString()}" on:change={refreshPreps}>
+                    <select name="preparations" value="{veggie.preparations[0].name}" id="preparations-{veggie.id.toString()}" on:change={refreshPreps} class="preparations-select">
                         {#each veggie.preparations as prep (prep.id)}
                             <option id="{prep.id}" value="{prep.name}">{prep.name}</option>
                         {/each}
@@ -119,10 +119,12 @@
         margin: 3px;
     }
     .checked {
+        background: #f7fff9;
+
         color: green;
-        border-color: green;
+        border-color: #b2dfdb;
         background-color: transparent;
-        border-width: 4px;
+        border-width: 2px;
         border-radius: 10px;
         margin-bottom: 0;
     }
@@ -134,5 +136,17 @@
     }
     .label {
         margin: 0;
+    }
+    .preparations-select {
+        max-width: 100px;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .preparations-select option {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>
