@@ -126,5 +126,28 @@ export const pantry = [
           "time": 7
         }
       ]
+    },
+    {
+      "id": 8,
+      "name": "Huevos",
+      "article": "Los",
+      "time": 9,
+      "checked": false,
+      "img": "eggs.png",
+      "preparations": [
+        {
+          "id":0,
+          "name": "yema cremosa",
+          "time": 7
+        },{
+          "id":2,
+          "name": "en su punto",
+          "time": 9
+        },{
+          "id":3,
+          "name": "muy hecho",
+          "time": 12
+        }
+      ]
     }
   ]
