@@ -3,19 +3,34 @@
     import Output from './Output.svelte';
     import { options } from "./options.js";
     import type { Opts } from './types';
+    import { onMount } from 'svelte';
     let opts: Opts = {
         options: options,
         veggies: []
     };
     let showInfo = true;
+    onMount(() => {
+        if (typeof window !== 'undefined') {
+            showInfo = localStorage.getItem('infoBoxClosed') !== 'true';
+        }
+    });
     function closeInfo() {
         showInfo = false;
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('infoBoxClosed', 'true');
+        }
+    }
+    function openInfo() {
+        showInfo = true;
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('infoBoxClosed');
+        }
     }
 </script>
 
 <div class="header">
     <span class="logo" aria-label="logo">💨</span>
-    <h1 class="title">Calculadora al-vapor</h1>
+    <h1 class="title" on:click={openInfo} style="cursor:pointer" title="Haz clic para ver la información de nuevo">Calculadora al-vapor</h1>
 </div>
 {#if showInfo}
     <div class="info-box">
@@ -30,6 +45,10 @@
 {/if}
 <Output bind:opts={opts}/>
 <Input bind:opts={opts}/>
+
+<footer class="footer">
+    <span>© 2024 &middot; Made by <a href="https://laro.dev" target="_blank" rel="noopener">laro.dev</a></span>
+</footer>
 
 <style>
 @import url('/fonts.css');
@@ -91,5 +110,23 @@ h4 {
     margin-top: 0.5em;
     margin-bottom: 1.2em;
     text-align: center;
+}
+.footer {
+    margin-top: 2.5em;
+    padding: 1.2em 0 1.2em 0;
+    text-align: center;
+    font-size: 1em;
+    color: #7a8a7a;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: none;
+}
+.footer a {
+    color: #009688;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+.footer a:hover {
+    color: #d32f2f;
 }
 </style>
