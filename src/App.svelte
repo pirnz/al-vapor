@@ -47,7 +47,7 @@
 <Input bind:opts={opts}/>
 
 <footer class="footer">
-    <span>© 2024 &middot; Made by <a href="https://laro.dev" target="_blank" rel="noopener">laro.dev</a></span>
+    <span>© 2024 &middot; Made by <a href="https://laro.dev" target="_blank" rel="noopener">🌊 laro.dev</a></span>
 </footer>
 
 <style>
