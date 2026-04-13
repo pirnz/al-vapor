@@ -1,8 +1,13 @@
 export const options = [
     {
         "id": "potencia",
-        "name": "Potencia",
-        "description": "0 - Cada verdura en su punto exacto, 10 - Unas más blandas, otras más al dente",
+        "name": { "es": "Potencia", "en": "Intensity" },
+        "description": {
+            "es": "1 - Cocción exacta · 3 - Mayor margen de error",
+            "en": "1 - Precise cooking · 3 - More margin for error"
+        },
+        "lowLabel": { "es": "preciso", "en": "precise" },
+        "highLabel": { "es": "más margen", "en": "more margin" },
         "value": 2,
         "min": 1,
         "max": 3,
