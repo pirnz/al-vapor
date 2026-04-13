@@ -6,3 +6,10 @@
 .devcontainer/
 
 raw/
+
+.claude/
+.ralph
+ralph.yml
+.worktree
+.worktrees/
+local-ralph.sh
