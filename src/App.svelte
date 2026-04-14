@@ -85,8 +85,8 @@
     {/if}
 
     <main>
-        <Output bind:opts={opts}/>
         <Input bind:opts={opts}/>
+        <Output bind:opts={opts}/>
     </main>
 
     <footer class="footer">

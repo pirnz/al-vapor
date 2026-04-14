@@ -128,7 +128,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0.55em 0.3em 0.4em;
         border-radius: 14px;
         cursor: pointer;
         transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease, background 0.22s ease, border-color 0.22s ease;
