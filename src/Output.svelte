@@ -2,6 +2,7 @@
     import type { Opts, Batch, Veggie } from "./types";
     import { fly, fade } from 'svelte/transition';
     import { lang, t } from "./i18n";
+    import Timer from "./Timer.svelte";
     export let opts: Opts;
     let batches: Batch[];
     let potValues = [1.2, 1, 0.8];
@@ -71,30 +72,43 @@
 </script>
 
 {#if batches.length > 0}
-    <div class="output" transition:fly={{ y: -12, duration: 260 }}>
-        <p class="total-time" in:fade={{ duration: 200, delay: 60 }}>
-            {$t.estimatedTime}: <strong>{batches[0].totalTime} {$t.minutes}</strong>
-        </p>
-        <ol class="batch-list">
-            {#each batches as batch, i (batch.index)}
-                <li
-                    class="order"
-                    in:fly={{ x: -20, duration: 260, delay: 60 + i * 70 }}
-                >
-                    <span class="ingredients">{batch.ingredients}</span>
-                    <span class="wait-line">
-                        💨 {$t.wait} <strong>{batch.time} {$t.minutesShort}</strong>
-                    </span>
-                </li>
-            {/each}
-            <li
-                class="done-item"
-                in:fly={{ x: -20, duration: 260, delay: 60 + batches.length * 70 }}
-            >
-                ✅ {$t.done}
-            </li>
-        </ol>
-    </div>
+    {#if opts.veggies.length === 1}
+        <!-- Single ingredient view -->
+        <div class="output single-view" transition:fly={{ y: -12, duration: 260 }}>
+            <div class="single-card" in:fade={{ duration: 200, delay: 60 }}>
+                <p class="ingredient-name">{batches[0].ingredients}</p>
+                <div class="time-display">
+                    <span class="time-number">{batches[0].totalTime}</span>
+                    <span class="time-unit">{$t.minutesShort}</span>
+                </div>
+            </div>
+        </div>
+    {:else}
+        <!-- Multi-ingredient timeline view -->
+        <div class="output multi-view" transition:fly={{ y: -12, duration: 260 }}>
+            <div class="hero-stat" in:fade={{ duration: 200, delay: 60 }}>
+                <span class="ready-label">{$t.readyIn}</span>
+                <span class="ready-time">{batches[0].totalTime}</span>
+                <span class="ready-unit">{$t.minutesShort}</span>
+            </div>
+            <div class="timeline" in:fade={{ duration: 200, delay: 100 }}>
+                {#each batches as batch, i (batch.index)}
+                    <div class="timeline-node" in:fly={{ x: -20, duration: 260, delay: 100 + i * 50 }}>
+                        <div class="batch-info">
+                            <p class="batch-ingredients">{batch.ingredients}</p>
+                            {#if i < batches.length - 1}
+                                <p class="wait-info">💨 {$t.wait} <strong>{batch.time} {$t.minutesShort}</strong></p>
+                            {/if}
+                        </div>
+                    </div>
+                {/each}
+                <div class="timeline-node done" in:fly={{ x: -20, duration: 260, delay: 100 + batches.length * 50 }}>
+                    <p class="done-text">✅ {$t.done}</p>
+                </div>
+            </div>
+            <Timer {batches} />
+        </div>
+    {/if}
 {:else}
     <div class="empty-state" transition:fade={{ duration: 200 }}>
         <p>{$t.emptyState}</p>
@@ -108,86 +122,141 @@
         color: #2a3a2a;
     }
 
-    .total-time {
-        font-size: 1.05em;
-        color: #3a5a3a;
-        margin: 0 0 0.85em;
-        padding: 0.55em 0.9em;
-        background: #e8f5f3;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: baseline;
-        gap: 0.35em;
+    /* Single ingredient view */
+    .single-view {
+        display: flex;
+        justify-content: center;
     }
 
-    .total-time strong {
+    .single-card {
+        background: linear-gradient(135deg, #e8f5f3 0%, #f0faf8 100%);
+        border: 2px solid #80cbc4;
+        border-radius: 20px;
+        padding: 2em 2.5em;
+        text-align: center;
+        max-width: 280px;
+        box-shadow: 0 8px 24px #b2dfdb44;
+    }
+
+    .ingredient-name {
+        margin: 0 0 1em;
+        font-size: 1.3em;
+        font-weight: 600;
         color: #007b6e;
-        font-size: 1.15em;
         letter-spacing: 0.01em;
     }
 
-    .batch-list {
-        counter-reset: list-counter;
-        list-style: none;
-        padding: 0;
-        margin: 0;
+    .time-display {
         display: flex;
-        flex-direction: column;
-        gap: 0.6em;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.3em;
     }
 
-    .order {
-        counter-increment: list-counter;
+    .time-number {
+        font-size: 3.5em;
+        font-weight: 700;
+        color: #009688;
+        line-height: 1;
+    }
+
+    .time-unit {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #3a5a3a;
+        margin-bottom: 0.2em;
+    }
+
+    /* Multi-ingredient timeline view */
+    .multi-view {
         display: flex;
         flex-direction: column;
+        gap: 1.5em;
+    }
+
+    .hero-stat {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.4em;
+        background: linear-gradient(135deg, #009688 0%, #00796b 100%);
+        color: white;
+        padding: 1.5em 2em;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px #00968844;
+    }
+
+    .ready-label {
+        font-size: 1em;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
+
+    .ready-time {
+        font-size: 2.8em;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .ready-unit {
+        font-size: 1em;
+        font-weight: 600;
+        margin-bottom: 0.15em;
+    }
+
+    .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8em;
+    }
+
+    .timeline-node {
         background: #f7fff9;
         border: 1.5px solid #b2dfdb;
         border-radius: 12px;
-        padding: 0.7em 0.9em;
-        position: relative;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        padding: 0.9em 1.1em;
+        transition: box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
     }
 
-    .order:hover {
+    .timeline-node:hover {
         box-shadow: 0 4px 14px #b2dfdb55;
         transform: translateX(2px);
+        background: #f0faf8;
     }
 
-    .order::before {
-        content: counter(list-counter) "º";
-        position: absolute;
-        top: 0.55em;
-        right: 0.8em;
-        font-weight: 700;
-        font-size: 0.8em;
-        color: #009688;
-        opacity: 0.6;
+    .batch-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3em;
     }
 
-    .ingredients {
+    .batch-ingredients {
+        margin: 0;
         font-weight: 600;
         font-size: 1em;
         color: #2a3a2a;
-        padding-right: 2em;
     }
 
-    .wait-line {
+    .wait-info {
+        margin: 0;
         font-size: 0.9em;
         color: #5a7a6a;
-        margin-top: 0.2em;
     }
 
-    .wait-line strong {
+    .wait-info strong {
         color: #007b6e;
     }
 
-    .done-item {
+    .timeline-node.done {
+        background: #f0fef8;
+        border-color: #80cbc4;
+    }
+
+    .done-text {
+        margin: 0;
         font-weight: 700;
         color: #009688;
         font-size: 1em;
-        padding: 0.5em 0.5em;
-        list-style: none;
-        letter-spacing: 0.01em;
     }
 
     .empty-state {
@@ -212,13 +281,26 @@
             margin: 0.75em 0.4em 0.5em;
         }
 
-        .total-time {
-            font-size: 0.97em;
-            padding: 0.45em 0.75em;
+        .single-card {
+            padding: 1.5em 2em;
+            max-width: 100%;
         }
 
-        .order {
-            padding: 0.55em 0.75em;
+        .time-number {
+            font-size: 2.8em;
+        }
+
+        .hero-stat {
+            padding: 1.2em 1.5em;
+            gap: 0.3em;
+        }
+
+        .ready-time {
+            font-size: 2.2em;
+        }
+
+        .timeline-node {
+            padding: 0.7em 0.9em;
         }
 
         .empty-state {
