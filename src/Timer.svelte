@@ -38,7 +38,7 @@
                     wakeLock = null;
                 });
             } catch (err) {
-                console.log("Wake Lock request failed");
+                // Wake Lock not available or permission denied - graceful fallback
             }
         }
     }
