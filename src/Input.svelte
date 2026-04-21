@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Option, Opts, Veggie, Preparation } from "./types";
+    import type { Option, Opts, Veggie } from "./types";
     import { pantry } from "./pantry.js";
     import { options } from "./options.js";
     import { lang, t } from "./i18n";
@@ -7,29 +7,29 @@
     export let opts: Opts;
     let localPantry: Veggie[] = pantry;
     let localOptions: Option[] = options;
+    let selectedVeggieId: number | null = null;
 
-    function refreshPreps(event: Event) {
-        const target = event.target as HTMLSelectElement;
-        const vegId = (target.parentElement as HTMLElement).id;
-        const prepId = parseInt(target.value);
-        const i = localPantry.findIndex((veg) => veg.id.toString() === vegId);
-        const preparation = localPantry[i].preparations.find((prep) => prep.id === prepId);
-        if (preparation) localPantry[i].time = preparation.time;
+    function toggleVeggie(vegId: number) {
+        const i = localPantry.findIndex((veg) => veg.id === vegId);
+        localPantry[i].checked = !localPantry[i].checked;
+
+        if (localPantry[i].checked) {
+            selectedVeggieId = vegId;
+        } else if (selectedVeggieId === vegId) {
+            selectedVeggieId = null;
+        }
+
         opts.veggies = localPantry.filter((veg) => veg.checked);
         opts.options = localOptions;
     }
 
-    function refreshVegs(event: Event) {
-        const target = event.target as HTMLElement;
-        const currentTarget = event.currentTarget as HTMLElement;
-        const vegId = currentTarget.id;
-        const i = localPantry.findIndex((veg) => veg.id.toString() === vegId);
-        const selectEl = document.getElementById('preparations-' + vegId) as HTMLSelectElement;
-        const prepId = parseInt(selectEl.value);
+    function selectPrep(event: Event, vegId: number) {
+        const target = event.target as HTMLSelectElement;
+        const prepId = parseInt(target.value);
+        const i = localPantry.findIndex((veg) => veg.id === vegId);
         const preparation = localPantry[i].preparations.find((prep) => prep.id === prepId);
-        if (preparation) localPantry[i].time = preparation.time;
-        if (!target.id.includes('preparations')) {
-            localPantry[i].checked = !localPantry[i].checked;
+        if (preparation) {
+            localPantry[i].time = preparation.time;
         }
         opts.veggies = localPantry.filter((veg) => veg.checked);
         opts.options = localOptions;
@@ -44,9 +44,8 @@
     {#each localPantry as veggie, i (veggie.id)}
         <div class="element" in:fly={{ y: 14, duration: 220, delay: i * 38 }}>
             <button
-                id={veggie.id.toString()}
                 class="ingredient"
-                on:click={refreshVegs}
+                on:click={() => toggleVeggie(veggie.id)}
                 class:unchecked={!veggie.checked}
                 class:checked={veggie.checked}
             >
@@ -56,34 +55,29 @@
                     class="vegetables"
                 />
                 <p class="label">{veggie.name[$lang]}</p>
-                {#if veggie.preparations.length > 1}
-                    <select
-                        name="preparations"
-                        value={veggie.preparations[0].id}
-                        id="preparations-{veggie.id}"
-                        on:change={refreshPreps}
-                        class="preparations-select"
-                    >
-                        {#each veggie.preparations as prep (prep.id)}
-                            <option value={prep.id}>{prep.name[$lang]}</option>
-                        {/each}
-                    </select>
-                {:else}
-                    <select
-                        name="preparations"
-                        value={veggie.preparations[0].id}
-                        id="preparations-{veggie.id}"
-                        style="display: none;"
-                    >
-                        {#each veggie.preparations as prep (prep.id)}
-                            <option value={prep.id}>{prep.name[$lang]}</option>
-                        {/each}
-                    </select>
-                {/if}
             </button>
         </div>
     {/each}
 </div>
+
+{#if selectedVeggieId !== null}
+    {#each localPantry as veggie (veggie.id)}
+        {#if veggie.id === selectedVeggieId && veggie.preparations.length > 1}
+            <div class="prep-selector" in:fly={{ y: -10, duration: 200 }}>
+                <p class="prep-label">{$t.selectPrep}</p>
+                <select
+                    value={veggie.preparations[0].id}
+                    on:change={(e) => selectPrep(e, veggie.id)}
+                    class="prep-select"
+                >
+                    {#each veggie.preparations as prep (prep.id)}
+                        <option value={prep.id}>{prep.name[$lang]}</option>
+                    {/each}
+                </select>
+            </div>
+        {/if}
+    {/each}
+{/if}
 
 <div class="options-wrapper">
     {#each localOptions as option (option.id)}
@@ -128,9 +122,11 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 0.5em;
         border-radius: 14px;
         cursor: pointer;
         transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease, background 0.22s ease, border-color 0.22s ease;
+        border: 2px solid transparent;
     }
 
     .ingredient:hover {
@@ -145,8 +141,6 @@
 
     .unchecked {
         background-color: transparent;
-        border: 2px solid transparent;
-        margin: 0;
     }
 
     .checked {
@@ -181,17 +175,55 @@
         font-weight: 600;
     }
 
-    .preparations-select {
-        margin-top: 0.3em;
-        max-width: 96px;
-        width: 100%;
-        font-size: 0.78em;
-        padding: 0.2em 0.3em;
-        border-radius: 6px;
-        border: 1px solid #b2dfdb;
+    .prep-selector {
+        margin: 1em 0.75em;
+        padding: 1em;
         background: #f7fff9;
+        border: 1.5px solid #80cbc4;
+        border-radius: 14px;
+        animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .prep-label {
+        margin: 0 0 0.6em 0;
+        font-family: 'Montserrat', Arial, sans-serif;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #2a3a2a;
+    }
+
+    .prep-select {
+        width: 100%;
+        padding: 0.6em 0.8em;
+        font-size: 0.95em;
+        border-radius: 8px;
+        border: 1px solid #b2dfdb;
+        background: white;
         color: #2a3a2a;
         cursor: pointer;
+        font-family: 'Montserrat', Arial, sans-serif;
+        transition: border-color 0.2s ease;
+    }
+
+    .prep-select:hover {
+        border-color: #80cbc4;
+    }
+
+    .prep-select:focus {
+        outline: none;
+        border-color: #009688;
+        box-shadow: 0 0 0 3px #b2dfdb33;
     }
 
     .options-wrapper {
@@ -259,6 +291,11 @@
         .options-wrapper {
             margin: 1.1em 0.5em 0.5em;
             padding: 0.65em 0.8em;
+        }
+
+        .prep-selector {
+            margin: 0.8em 0.5em;
+            padding: 0.8em;
         }
     }
 
