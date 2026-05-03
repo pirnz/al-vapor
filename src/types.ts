@@ -1,44 +1,36 @@
-export interface BilingualName {
-    es: string;
-    en: string;
-}
+// Types for the al-vapor steam calculator
 
-export interface Batch {
-    index: number;
-    ingredients: string;
-    time: number;
-    totalTime: number;
-}
-
-export interface Veggie {
-    id: number;
-    img: string;
-    name: BilingualName;
-    article: BilingualName;
-    time: number;
-    checked: boolean;
-    preparations: Preparation[];
+export interface LocalizedString {
+  es: string;
+  en: string;
 }
 
 export interface Preparation {
-    id: number;
-    time: number;
-    name: BilingualName;
+  id: number;
+  name: LocalizedString;
+  time: number; // base minutes at medium fire
 }
 
-export interface Opts {
-    veggies: Veggie[];
-    options: Option[];
+export interface Ingredient {
+  id: number;
+  name: LocalizedString;
+  article: LocalizedString;
+  time: number; // default time (fallback)
+  checked: boolean;
+  img: string;
+  preparations: Preparation[];
 }
 
-export interface Option {
-    id: string;
-    name: BilingualName;
-    description?: BilingualName;
-    lowLabel?: BilingualName;
-    highLabel?: BilingualName;
-    value: number;
-    min: number;
-    max: number;
-    step: number;
+export type Lang = 'en' | 'es';
+export type Intensity = 1 | 2 | 3;
+
+export interface OrderItem {
+  ing: Ingredient;
+  prep: Preparation;
+  time: number;   // effective time after fire power applied
+  addAt: number;  // minutes after start to add this ingredient (0 = first)
+  maxTime: number; // total cooking duration
 }
+
+// Map of ingredientId → prepId
+export type Selections = Map<number, number>;
