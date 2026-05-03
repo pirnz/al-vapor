@@ -5,8 +5,8 @@ Instructions for building, optimizing, and deploying Al-Vapor to production.
 ## Prerequisites
 
 - Node.js 14+ and npm installed locally
-- HTTPS-enabled hosting (required for Wake Lock and PWA notifications)
-- A domain name (recommended for PWA installation)
+- A hosting service (static hosting, serverless, or self-hosted)
+- HTTPS-enabled hosting (recommended for PWA and Wake Lock when those features are added)
 
 ## Build for Production
 

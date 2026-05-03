@@ -18,11 +18,11 @@ A mobile-first web app that calculates the optimal order to add vegetables to a 
 # Install dependencies
 npm install
 
-# Start dev server with live reload (runs on port 5000)
+# Start dev server with live reload (runs on port 8080)
 npm run dev
 ```
 
-Open [http://localhost:5000](http://localhost:5000) in your browser.
+Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ### Production Build
 
@@ -44,24 +44,22 @@ npm run check
 
 | File | Purpose |
 |------|---------|
-| `App.svelte` | Layout, header, language toggle, info box |
-| `Input.svelte` | Ingredient selection grid (8 items), prep dropdown, intensity slider |
-| `Output.svelte` | Cook schedule display: single-ingredient time card or multi-ingredient timeline |
-| `Timer.svelte` | Active cooking session: countdown, alerts, Wake Lock, PWA notifications |
+| `App.svelte` | Main layout: header, ingredient selection, intensity controls, results display |
+| `IngredientCard.svelte` | Single ingredient card with selection toggle and prep options |
+| `ResultRow.svelte` | Result row showing ingredient, prep, and cooking time in the order list |
 
 ### Data Flow
 
-1. **Input.svelte** — User selects ingredients and cooking intensity
-2. **Calculation** — Groups ingredients into batches (±3 min tolerance), accounts for +2 min heat loss per pot opening
-3. **Output.svelte** — Displays total time and batch sequence
-4. **Timer.svelte** — When 2+ ingredients are selected, user can start an active session with live countdown and alerts
+1. **User Input** — Select ingredients via IngredientCard, choose cooking intensity (Low/Medium/High)
+2. **Calculation** — `computeOrder()` groups ingredients into batches (±3 min tolerance), accounts for +2 min heat loss per pot opening
+3. **Display** — Results shown via ResultRow components with total cook time and batch sequence
 
 ### Core Data
 
-**pantry.js** — Ingredient registry with:
+**src/pantry.ts** — Ingredient registry with:
 - Base steam time (minutes)
 - Prep variants (whole, halved, chopped, etc.) that modify cook time
-- Intensity adjustment options
+- 8 vegetables with multiple preparation options
 
 Reference: [Cooking4Charlie vegetable cooking table](https://www.cooking4charlie.com/veg-cooking-table/)
 
@@ -69,49 +67,31 @@ Reference: [Cooking4Charlie vegetable cooking table](https://www.cooking4charlie
 
 ### Design
 - **Mobile-first** — optimized for cooking scenarios where the phone is in hand
-- **Bilingual** — English and Spanish UI (tracked in `i18n.ts`)
+- **Bilingual** — English and Spanish UI with language toggle
 - **Responsive** — works from 320px+ screens
 - **Warm color palette** — teal (#009688) accent with light greens
 
-### UX Phases
+### Current UX
 
-**Phase 1: Value visibility**
-- Single ingredient → time card ("Broccoli — 12 min")
-- 2+ ingredients → timeline view with hero total time at top
-
-**Phase 2: Reduced friction**
-- Prep dropdown moves below ingredient, only shown after selection
-- Cleaner ingredient grid without inline prep dropdowns
-
-**Phase 3: Active cooking**
-- Start button to begin a session
-- Live countdown to next batch
-- Audible beep at each batch waypoint
-- Wake Lock keeps screen on (mobile)
-- PWA notifications for background alerts (if permitted)
+- **Ingredient Selection** — 8-item grid of vegetables (IngredientCard)
+- **Prep Options** — Each ingredient offers preparation variants (whole, halved, chopped, etc.)
+- **Intensity Control** — Low/Medium/High settings to adjust cooking times
+- **Results Display** — Shows total cook time and the order to add ingredients
+- **Bilingual** — Full English/Spanish support with easy language toggle
 
 ## Development Notes
 
 ### i18n (Internationalization)
 
-All user-facing text is in `src/i18n.ts`. Add translations for both EN and ES:
+Bilingual text is managed directly in components using a simple `t()` helper function:
 
-```typescript
-export const translations = {
-  en: { /* English keys */ },
-  es: { /* Spanish keys */ }
-};
-```
-
-Update UI with:
 ```svelte
-import { t } from './i18n';
-{$t.keyName}
+const t = (en: string, es: string): string => lang === 'es' ? es : en;
+
+<p>{t('English text', 'Spanish text')}</p>
 ```
 
-### Bilingual Strings
-
-Manage in `i18n.ts` — centralized translations for EN/ES. The app detects browser language preference and allows manual toggle via flags in the header.
+The app detects browser language preference on first load and allows manual toggle via language buttons in the header (🇬🇧 EN / 🇪🇸 ES).
 
 ### Styling
 
@@ -136,16 +116,13 @@ See [README_DEPLOY.md](./README_DEPLOY.md) for production deployment, hosting, a
 
 ## Browser Support
 
-### Core Features
+The app works on all modern browsers:
 - Chrome/Edge 80+
 - Firefox 75+
 - Safari 13+
 - Mobile browsers (iOS Safari 13+, Chrome Android 80+)
 
-### Optional Features
-- **Wake Lock** — Chrome Android 84+, Safari iOS 16.4+
-- **Web Audio API** — all modern browsers
-- **PWA/Notifications** — requires HTTPS and installation
+Requires JavaScript and CSS Grid support.
 
 ## Contributing
 
