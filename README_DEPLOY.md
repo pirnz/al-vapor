@@ -115,12 +115,43 @@ EXPOSE 443 80
 CMD ["caddy", "file-server", "--root", "/app", "--listen", ":443"]
 ```
 
+## Timer Feature & Web APIs
+
+Al-Vapor includes a cooking timer with several modern web APIs. These work best with HTTPS in production.
+
+### Web APIs Used
+
+**Wake Lock API** — Keeps phone screen on while timer is running
+- Requires: Chrome Android 84+, Safari iOS 16.4+, HTTPS
+- Gracefully degrades (user can manually keep screen on)
+- Released on timer stop or browser back/close
+
+**Notifications API** — Push notifications at each ingredient step
+- Requires: HTTPS, user permission
+- Prompts for permission when user taps "Start" on timer
+- Users can deny (timer still works with just audio)
+- Displays bilingual notifications (EN/ES)
+
+**Web Audio API** — Audio alerts for timer events
+- No permissions required
+- Generates beeps at ingredient steps and completion
+- Works even if app is not in focus (user must have audio enabled)
+
+### Browser Compatibility
+
+Timer features work on:
+- ✅ Chrome Android 80+ (full support: Wake Lock, Notifications, Audio)
+- ✅ Safari iOS 13+ (audio + notifications; Wake Lock on iOS 16.4+)
+- ✅ Firefox 75+ (audio + notifications; no Wake Lock)
+- ✅ Desktop browsers (audio + notifications; no Wake Lock)
+
 ## HTTPS & Security
 
-**HTTPS is required** for:
-- Wake Lock API (mobile screen-on during cooking)
-- PWA installation and notifications
-- Service Worker registration
+**HTTPS is required** for all PWA features:
+- **Wake Lock API** — keeps phone screen on during timer (Chrome Android 84+, Safari iOS 16.4+)
+- **Web Notifications API** — push notifications at timer steps
+- **Service Worker** — offline support and background caching
+- **PWA Installation** — manifest and add-to-home-screen prompt
 
 **Obtain a certificate:**
 - Let's Encrypt (free) — use Certbot or your hosting provider's auto-renewal
@@ -128,73 +159,34 @@ CMD ["caddy", "file-server", "--root", "/app", "--listen", ":443"]
 
 ## PWA Setup
 
-Al-Vapor can be installed as a progressive web app on mobile.
+Al-Vapor is a fully functional progressive web app that can be installed on mobile.
 
-### index.html Meta Tags
+### ✅ Already Configured
 
-Ensure `public/index.html` includes:
-```html
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#b2dfdb">
-<meta name="description" content="Vegetable steaming calculator">
-```
-
-### Manifest File (Optional but Recommended)
-
-Create `public/manifest.json`:
+**Manifest** — `public/manifest.json` is already set up with:
 ```json
 {
-  "name": "Al-Vapor — Steaming Calculator",
-  "short_name": "Al-Vapor",
-  "description": "Calculate vegetable steaming times and batching order",
+  "name": "💨 al-vapor — Steam Calculator",
+  "short_name": "al-vapor",
+  "description": "Perfect steam cooking times, adjusted for your fire power",
   "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#009688",
   "scope": "/",
-  "icons": [
-    {
-      "src": "/img/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/img/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "display": "standalone",
+  "background_color": "#f7f3ec",
+  "theme_color": "#2d5a3d",
+  "orientation": "portrait-primary",
+  "icons": [{ "src": "/favicon.png", "sizes": "192x192", ... }]
 }
 ```
+Linked in `public/index.html` with `<link rel="manifest" href="/manifest.json">`.
 
-Link in `public/index.html`:
-```html
-<link rel="manifest" href="/manifest.json">
-```
+**Service Worker** — `public/sw.js` implements cache-first strategy:
+- Caches all core assets on install
+- Serves from cache first, falls back to network
+- Auto-caches new assets on successful fetch
+- Offline fallback to homepage
 
-### Service Worker (Optional)
-
-For offline support, add a service worker. Example `public/sw.js`:
-```javascript
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open('v1').then(cache => {
-    return cache.addAll([
-      '/',
-      '/build/bundle.js',
-      '/build/bundle.css',
-      '/global.css'
-    ]);
-  }));
-});
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
-  );
-});
-```
-
-Register in `public/index.html`:
+Registered in `public/index.html`:
 ```html
 <script>
   if ('serviceWorker' in navigator) {
@@ -202,6 +194,36 @@ Register in `public/index.html`:
   }
 </script>
 ```
+
+**Meta Tags** — `public/index.html` includes all PWA meta tags:
+- `viewport` for mobile scaling
+- `theme-color` for browser chrome color
+- `description` for app store listings
+- `apple-mobile-web-app-capable` for iOS
+- `apple-mobile-web-app-status-bar-style` for iOS status bar
+
+### Installation
+
+Users will see an "Add to Home Screen" prompt on:
+- **Android Chrome** — After a few visits
+- **iOS Safari** — Use Share → Add to Home Screen manually (iOS does not auto-prompt)
+
+On installation, the app behaves like a native app:
+- Full-screen, no browser UI
+- Portrait orientation by default
+- Appears in app drawer/home screen
+- Works offline (cached assets)
+
+### Icon & Screenshots
+
+The manifest currently uses `/favicon.png` for all icon sizes. For production:
+- Generate proper PWA icons: 192x192 and 512x512 PNG
+- Place in `public/img/` (or update manifest `src` paths)
+- Include 540x720 screenshot for app stores
+
+Example icon tools:
+- [PWA Builder Image Generator](https://www.pwabuilder.com/)
+- ImageMagick: `convert favicon.svg -resize 192x192 icon-192.png`
 
 ## Performance Optimization
 
@@ -288,15 +310,34 @@ jobs:
 
 ### Pre-deployment Checklist
 
+**Build & Code Quality:**
 - [ ] `npm run check` passes (no TypeScript errors)
 - [ ] `npm run build` succeeds without warnings
 - [ ] `public/build/bundle.js` is minified (single line)
+
+**Hosting & Security:**
 - [ ] HTTPS is enabled on production domain
-- [ ] Manifest.json linked in index.html
-- [ ] Meta tags set correctly (viewport, theme-color, description)
-- [ ] Tested on mobile device (iOS Safari, Chrome Android)
-- [ ] Wake Lock works (mobile)
-- [ ] PWA installable (add to home screen appears)
+- [ ] Certificate is valid (not self-signed)
+- [ ] Server supports HTTP/2 and gzip compression
+
+**PWA Configuration:**
+- [ ] Manifest.json exists and is valid JSON
+- [ ] Manifest linked in index.html: `<link rel="manifest" href="/manifest.json">`
+- [ ] Theme color and description set in meta tags
+- [ ] Service Worker registered in index.html
+- [ ] Service Worker (`public/sw.js`) exists
+
+**Mobile Testing** (test on real devices if possible):
+- [ ] Ingredient grid responsive on 320px (1 column), 480px (2 columns), desktop (4 columns)
+- [ ] Timer opens and displays correctly
+- [ ] Timer audio alerts work (audio.context, beeps at step and completion)
+- [ ] Notifications permission prompt appears on timer start
+- [ ] Push notifications appear (requires notification permission granted)
+- [ ] Wake Lock prevents screen dimming during timer (Chrome Android 84+, Safari iOS 16.4+)
+- [ ] PWA install prompt appears on mobile (Chrome: after several visits; iOS: use Share → Add to Home Screen)
+- [ ] App works offline (after install, can load from service worker cache)
+- [ ] Language toggle (EN/ES) works in all components
+- [ ] Spanish translation is complete (menu items, timer, notifications)
 
 ## Rollback Plan
 
@@ -333,6 +374,37 @@ If deployment has issues:
 - Verify correct `public/` directory is being served
 - Check browser console for errors
 - Clear browser cache and reload
+
+### Timer / Notifications Issues
+
+**Notifications permission not appearing:**
+- User already denied permission (browser remembers this)
+- Check browser settings: Settings → Notifications → al-vapor → Allow
+- Requires HTTPS
+- Try using app in private/incognito window to reset permissions
+
+**Audio beeps not working:**
+- Check browser volume and system volume
+- Audio context may require user interaction (tap Start button) on some browsers
+- Check browser console for `AudioContext` errors
+
+**Wake Lock not keeping screen on:**
+- Only supported on Chrome Android 84+ and Safari iOS 16.4+
+- Requires HTTPS
+- User must interact first (tap Start button)
+- Phone may still sleep if battery saver is enabled
+
+**Service Worker not caching / offline not working:**
+- HTTPS required for service worker
+- Clear browser cache and revisit site to trigger cache-addAll
+- Check browser DevTools → Application → Service Workers → Status
+- Verify service worker file path is correct: `/sw.js`
+
+**PWA install prompt not appearing:**
+- Chrome: only shows after user has visited multiple times
+- iOS: no auto-prompt; use Safari Share → Add to Home Screen
+- Manifest.json must be valid JSON
+- Icons must be accessible (check network tab in DevTools)
 
 ## References
 
