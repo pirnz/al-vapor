@@ -36,6 +36,24 @@
     oscillator.stop(audioCtx.currentTime + duration / 1000);
   }
 
+  async function requestNotificationPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') return;
+    if (Notification.permission !== 'denied') {
+      await Notification.requestPermission();
+    }
+  }
+
+  function showNotification(title: string, options: NotificationOptions = {}) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        icon: '/favicon.png',
+        badge: '/favicon.png',
+        ...options,
+      });
+    }
+  }
+
   async function acquireWakeLock() {
     if (!('wakeLock' in navigator)) return;
     try {
@@ -55,6 +73,7 @@
     if (!isRunning) {
       isRunning = true;
       acquireWakeLock();
+      requestNotificationPermission();
       runTimer();
     } else {
       isRunning = false;
@@ -80,10 +99,18 @@
         const diff = baseTime - nextTime;
         secondsRemaining = Math.max(0, diff * 60);
         playBeep(1000, 300);
+        showNotification(
+          lang === 'es' ? `Añade ${nextItem.ing.name[lang]}` : `Add ${nextItem.ing.name[lang]}`,
+          { tag: 'step', requireInteraction: false }
+        );
       } else if (secondsRemaining === 0 && currentIndex === items.length - 1) {
         playBeep(800, 200);
         playBeep(1000, 200);
         playBeep(1200, 400);
+        showNotification(
+          lang === 'es' ? '¡Listo para servir!' : 'Ready to serve!',
+          { tag: 'done', requireInteraction: false }
+        );
         isRunning = false;
         releaseWakeLock();
         return;

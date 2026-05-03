@@ -86,6 +86,7 @@
     position: relative;
     outline: none;
     width: 100%;
+    box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
   }
 
