@@ -1,6 +1,7 @@
 <script lang="ts">
   import IngredientCard from './components/IngredientCard.svelte';
   import ResultRow from './components/ResultRow.svelte';
+  import Timer from './components/Timer.svelte';
   import { pantry } from './pantry';
   import { computeOrder } from './lib/cooking';
   import type { Intensity, Lang, Selections } from './types';
@@ -10,6 +11,7 @@
   let lang: Lang         = 'en';
   let intensity: Intensity = 2;
   let showInfo: boolean  = false;
+  let showTimer: boolean = false;
   let selections: Selections = new Map();
 
   function toggleIngredient(ingId: number): void {
@@ -35,7 +37,7 @@
   const intensityOptions = [
     { v: 1 as Intensity, en: 'Low',    es: 'Bajo'   },
     { v: 2 as Intensity, en: 'Medium', es: 'Medio'  },
-    { v: 3 as Intensity, en: 'High',   es: 'Fuerte' },
+    { v: 3 as Intensity, en: 'High',   es: 'Alto'   },
   ];
 </script>
 
@@ -131,7 +133,15 @@
             : t('Select ingredients to start', 'Selecciona ingredientes')}
         </h2>
         {#if order.length > 0}
-          <span class="total-badge">{order[0].maxTime} {t('min', 'min')}</span>
+          <button
+            class="timer-badge-btn"
+            on:click={() => showTimer = true}
+            aria-label="Start timer"
+            title={t('Start timer', 'Iniciar temporizador')}
+          >
+            <span class="timer-icon">⏱️</span>
+            <span class="total-badge">{order[0].maxTime} {t('min', 'min')}</span>
+          </button>
         {/if}
       </div>
 
@@ -156,6 +166,14 @@
   </footer>
 
 </div>
+
+{#if showTimer}
+  <Timer
+    items={order}
+    {lang}
+    onClose={() => showTimer = false}
+  />
+{/if}
 
 <style>
   .app {
@@ -256,6 +274,18 @@
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px;
   }
 
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 320px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .power-row {
     background: white; border-radius: 14px; padding: 11px 15px; margin-bottom: 14px;
     border: 1px solid var(--parchment);
@@ -300,6 +330,24 @@
   }
 
   .has-order .results-title { color: white; }
+
+  .timer-badge-btn {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    transition: transform 0.15s ease;
+  }
+
+  .timer-badge-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .timer-icon {
+    font-size: 16px;
+  }
 
   .total-badge {
     background: rgba(255,255,255,0.18); border-radius: 7px; padding: 3px 9px;

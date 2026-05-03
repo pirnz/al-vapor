@@ -75,9 +75,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 7px;
-    padding: 13px 7px 10px;
-    border-radius: 14px;
+    gap: 5px;
+    padding: 10px 5px 8px;
+    border-radius: 12px;
     background: white;
     border: 2px solid transparent;
     box-shadow: 0 1px 4px rgba(30,26,20,0.07);
@@ -115,12 +115,44 @@
   }
 
   .label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     color: #4a4438;
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.2;
     transition: color 0.16s;
+  }
+
+  @media (max-width: 480px) {
+    .ingredient-btn {
+      gap: 4px;
+      padding: 8px 4px 6px;
+    }
+
+    .label {
+      font-size: 9px;
+    }
+
+    .img-wrap, img {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .ingredient-btn {
+      gap: 3px;
+      padding: 6px 3px 5px;
+    }
+
+    .label {
+      font-size: 8px;
+    }
+
+    .img-wrap, img {
+      width: 40px;
+      height: 40px;
+    }
   }
 
   .selected .label { color: #2d5a3d; }
