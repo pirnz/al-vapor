@@ -65,7 +65,7 @@ export const pantry: Ingredient[] = [
     article: { es: 'Las', en: 'The' },
     time: 12,
     checked: false,
-    img: 'coles-de-bruselas.webp',
+    img: 'coles-bruselas.png',
     preparations: [
       { id: 0, name: { es: 'mitades', en: 'halved' }, time: 8 },
       { id: 1, name: { es: 'enteras', en: 'whole' }, time: 12 },
