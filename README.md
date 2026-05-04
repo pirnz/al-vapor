@@ -111,7 +111,10 @@ Requests permission on first timer start. Allows hands-free alerts even if the a
 const oscillator = audioCtx.createOscillator();
 oscillator.frequency.value = freq;
 ```
-Multi-tone chime on completion provides clear audio confirmation.
+Distinctive multi-frequency alarm pattern on completion:
+- 5-tone sequence (800, 1000, 1200, 1000, 1400 Hz)
+- Pattern repeats twice for emphasis and clarity
+- Provides unmistakable audio confirmation that cooking is done
 
 All notifications are bilingual (English/Spanish) and respect the language setting.
 
