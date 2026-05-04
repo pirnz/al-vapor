@@ -36,6 +36,28 @@
     oscillator.stop(audioCtx.currentTime + duration / 1000);
   }
 
+  function playCompletionAlarm() {
+    const pattern = [
+      { freq: 800, duration: 200 },
+      { freq: 1000, duration: 200 },
+      { freq: 1200, duration: 200 },
+      { freq: 1000, duration: 100 },
+      { freq: 1400, duration: 100 }
+    ];
+
+    let delay = 0;
+    // Repeat the pattern twice for stronger emphasis
+    for (let i = 0; i < 2; i++) {
+      pattern.forEach(({ freq, duration }) => {
+        setTimeout(() => {
+          playBeep(freq, duration);
+        }, delay);
+        delay += duration + 50;
+      });
+      delay += 200; // Gap between repetitions
+    }
+  }
+
   async function requestNotificationPermission() {
     if (!('Notification' in window)) return;
     if (Notification.permission === 'granted') return;
@@ -104,9 +126,7 @@
           { tag: 'step', requireInteraction: false }
         );
       } else if (secondsRemaining === 0 && currentIndex === items.length - 1) {
-        playBeep(800, 200);
-        playBeep(1000, 200);
-        playBeep(1200, 400);
+        playCompletionAlarm();
         showNotification(
           lang === 'es' ? '¡Listo para servir!' : 'Ready to serve!',
           { tag: 'done', requireInteraction: false }
