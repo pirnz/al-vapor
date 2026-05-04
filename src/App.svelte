@@ -32,7 +32,7 @@
   $: order = computeOrder(selections, pantry, intensity);
 
   // ── i18n helper ──────────────────────────────────────────────────────────
-  const t = (en: string, es: string): string => lang === 'es' ? es : en;
+  $: t = (en: string, es: string) => lang === 'es' ? es : en;
   const langs: Lang[] = ['en', 'es'];
   const intensityOptions = [
     { v: 1 as Intensity, en: 'Low',    es: 'Bajo'   },
@@ -48,7 +48,7 @@
     <button class="logo-btn" on:click={() => showInfo = !showInfo} aria-label="Info">💨</button>
 
     <div class="title-block">
-      <h1>{t('Steam Calculator', 'Al-vapor')}</h1>
+      <h1>{t('Al-vapor - steam calculator', 'Al-vapor')}</h1>
       <p class="subtitle">{t('Perfect timing, every time', 'El tiempo perfecto, siempre')}</p>
     </div>
 
