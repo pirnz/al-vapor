@@ -25,13 +25,6 @@
     aria-label={name}
   >
     <div class="img-wrap">
-      {#if isSelected}
-        <div class="steam-wisps" aria-hidden="true">
-          <span style="--d:0s;    --dur:1.5s; left:5px"  />
-          <span style="--d:0.5s;  --dur:1.8s; left:15px" />
-          <span style="--d:0.25s; --dur:1.6s; left:25px" />
-        </div>
-      {/if}
       <img src="/img/{ing.img}" alt={name} />
     </div>
 
@@ -168,27 +161,6 @@
     align-items: center;
     justify-content: center;
     animation: pop-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .steam-wisps {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 36px;
-    height: 38px;
-    pointer-events: none;
-  }
-
-  .steam-wisps span {
-    position: absolute;
-    bottom: 0;
-    width: 3px; height: 14px;
-    border-radius: 99px;
-    background: rgba(180,210,188,0.9);
-    filter: blur(1.5px);
-    animation: steam-rise var(--dur) ease-in-out infinite;
-    animation-delay: var(--d);
   }
 
   .prep-pills {
