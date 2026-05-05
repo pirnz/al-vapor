@@ -120,7 +120,6 @@
         const nextTime = nextItem?.maxTime ?? 0;
         const diff = baseTime - nextTime;
         secondsRemaining = Math.max(0, diff * 60);
-        playBeep(1000, 300);
         showNotification(
           lang === 'es' ? `Añade ${nextItem.ing.name[lang]}` : `Add ${nextItem.ing.name[lang]}`,
           { tag: 'step', requireInteraction: false }
