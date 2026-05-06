@@ -6,56 +6,29 @@
   export let onClose: () => void = () => {};
 
   let isRunning = false;
-  let currentIndex = 0;
-  let secondsRemaining = 0;
-  let totalSeconds = 0;
+  let phaseIndex = 0;
+  let phaseSeconds = 0;
+  let phaseDuration = 0;
+  let phaseComplete = false;
   let wakeLock: any = null;
 
   const t = (en: string, es: string): string => lang === 'es' ? es : en;
 
-  $: if (items.length > 0 && secondsRemaining === 0 && currentIndex === 0) {
-    totalSeconds = (items[0]?.maxTime ?? 0) * 60;
-    secondsRemaining = totalSeconds;
-  }
-
-  function playBeep(freq = 800, duration = 200) {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    oscillator.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    oscillator.frequency.value = freq;
-    oscillator.type = 'sine';
-
-    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration / 1000);
-
-    oscillator.start(audioCtx.currentTime);
-    oscillator.stop(audioCtx.currentTime + duration / 1000);
-  }
-
-  function playCompletionAlarm() {
-    const pattern = [
-      { freq: 800, duration: 200 },
-      { freq: 1000, duration: 200 },
-      { freq: 1200, duration: 200 },
-      { freq: 1000, duration: 100 },
-      { freq: 1400, duration: 100 }
-    ];
-
-    let delay = 0;
-    // Repeat the pattern twice for stronger emphasis
-    for (let i = 0; i < 2; i++) {
-      pattern.forEach(({ freq, duration }) => {
-        setTimeout(() => {
-          playBeep(freq, duration);
-        }, delay);
-        delay += duration + 50;
-      });
-      delay += 200; // Gap between repetitions
+  function getPhaseDuration(i: number): number {
+    if (i < items.length - 1) {
+      return (items[i + 1].addAt - items[i].addAt) * 60;
     }
+    return items[items.length - 1].time * 60;
+  }
+
+  $: if (items.length > 0 && phaseSeconds === 0 && phaseIndex === 0) {
+    phaseDuration = getPhaseDuration(0);
+    phaseSeconds = phaseDuration;
+  }
+
+  function playBell() {
+    const audio = new Audio('/bell-ring.mp3');
+    audio.play().catch(() => {});
   }
 
   async function requestNotificationPermission() {
@@ -80,9 +53,7 @@
     if (!('wakeLock' in navigator)) return;
     try {
       wakeLock = await (navigator as any).wakeLock.request('screen');
-    } catch (err) {
-      console.log('Wake lock failed:', err);
-    }
+    } catch (_) {}
   }
 
   function releaseWakeLock() {
@@ -104,48 +75,54 @@
   }
 
   function runTimer() {
-    if (!isRunning || secondsRemaining <= 0) {
+    if (!isRunning || phaseSeconds <= 0) {
       isRunning = false;
       releaseWakeLock();
       return;
     }
 
     setTimeout(() => {
-      secondsRemaining--;
+      phaseSeconds--;
 
-      if (secondsRemaining === 0 && currentIndex < items.length - 1) {
-        currentIndex++;
-        const nextItem = items[currentIndex];
-        const baseTime = items[0]?.maxTime ?? 0;
-        const nextTime = nextItem?.maxTime ?? 0;
-        const diff = baseTime - nextTime;
-        secondsRemaining = Math.max(0, diff * 60);
-        showNotification(
-          lang === 'es' ? `Añade ${nextItem.ing.name[lang]}` : `Add ${nextItem.ing.name[lang]}`,
-          { tag: 'step', requireInteraction: false }
-        );
-      } else if (secondsRemaining === 0 && currentIndex === items.length - 1) {
-        playCompletionAlarm();
-        showNotification(
-          lang === 'es' ? '¡Listo para servir!' : 'Ready to serve!',
-          { tag: 'done', requireInteraction: false }
-        );
+      if (phaseSeconds === 0) {
         isRunning = false;
         releaseWakeLock();
+        playBell();
+        phaseComplete = true;
+        if (phaseIndex === items.length - 1) {
+          showNotification(
+            lang === 'es' ? '¡Listo para servir!' : 'Ready to serve!',
+            { tag: 'done', requireInteraction: false }
+          );
+        } else {
+          const nextItem = items[phaseIndex + 1];
+          showNotification(
+            lang === 'es' ? `Añade ${nextItem.ing.name.es}` : `Add ${nextItem.ing.name.en}`,
+            { tag: 'step', requireInteraction: false }
+          );
+        }
         return;
       }
 
-      if (isRunning) {
-        runTimer();
-      }
+      if (isRunning) runTimer();
     }, 1000);
+  }
+
+  function startNextPhase() {
+    phaseIndex++;
+    phaseDuration = getPhaseDuration(phaseIndex);
+    phaseSeconds = phaseDuration;
+    phaseComplete = false;
+    toggleTimer();
   }
 
   function reset() {
     isRunning = false;
     releaseWakeLock();
-    currentIndex = 0;
-    secondsRemaining = totalSeconds;
+    phaseIndex = 0;
+    phaseDuration = getPhaseDuration(0);
+    phaseSeconds = phaseDuration;
+    phaseComplete = false;
   }
 
   function formatTime(seconds: number): string {
@@ -176,17 +153,56 @@
       <div class="timer-empty">
         <p>{t('Select ingredients to start timer', 'Selecciona ingredientes para iniciar')}</p>
       </div>
+    {:else if phaseComplete}
+      <div class="timer-content">
+        {#if phaseIndex === items.length - 1}
+          <div class="phase-complete">
+            <div class="phase-heading">{t('Ready to serve! 🍽', '¡Listo para servir! 🍽')}</div>
+          </div>
+          <div class="timer-controls">
+            <button class="timer-btn play-btn" on:click={onClose}>
+              {t('Done', 'Hecho')}
+            </button>
+            <button class="timer-btn reset-btn" on:click={reset}>
+              {t('Start over', 'Volver a empezar')}
+            </button>
+          </div>
+        {:else}
+          <div class="phase-complete">
+            <div class="phase-label">{t('Add now:', 'Añade ahora:')}</div>
+            <div class="ingredient-name">{items[phaseIndex + 1].ing.name[lang]}</div>
+            <div class="phase-subtext">
+              {t(`Steam for ${items[phaseIndex + 1].time} min`, `Cocinar ${items[phaseIndex + 1].time} min al vapor`)}
+            </div>
+          </div>
+          <div class="timer-controls">
+            <button class="timer-btn play-btn" on:click={startNextPhase}>
+              ▶ {t(`Start ${items[phaseIndex + 1].time} min timer`, `Iniciar ${items[phaseIndex + 1].time} min`)}
+            </button>
+            <button class="timer-btn reset-btn" on:click={reset}>
+              {t('Reset all', 'Reiniciar todo')}
+            </button>
+          </div>
+        {/if}
+      </div>
     {:else}
       <div class="timer-content">
         <div class="timer-display">
-          <div class="time">{formatTime(secondsRemaining)}</div>
+          <div class="time">{formatTime(phaseSeconds)}</div>
           <div class="step-info">
-            {#if currentIndex < items.length}
-              <div class="current-step">
-                {t('Step', 'Paso')} {currentIndex + 1} {t('of', 'de')} {items.length}
+            <div class="current-step">
+              {t('Step', 'Paso')} {phaseIndex + 1} {t('of', 'de')} {items.length}
+            </div>
+            <div class="ingredient-name">
+              {items[phaseIndex].ing.name[lang]}
+            </div>
+            {#if phaseIndex < items.length - 1}
+              <div class="next-info">
+                {t('Up next:', 'A continuación:')} {items[phaseIndex + 1].ing.name[lang]}
               </div>
-              <div class="ingredient-name">
-                {items[currentIndex].ing.name[lang]}
+            {:else}
+              <div class="next-info">
+                {t('Almost done', 'Casi listo')}
               </div>
             {/if}
           </div>
@@ -200,22 +216,17 @@
           >
             {isRunning ? t('Pause', 'Pausar') : t('Start', 'Iniciar')}
           </button>
-          <button
-            class="timer-btn reset-btn"
-            on:click={reset}
-          >
+          <button class="timer-btn reset-btn" on:click={reset}>
             {t('Reset', 'Reiniciar')}
           </button>
         </div>
 
-        {#if currentIndex < items.length}
-          <div class="progress-bar">
-            <div
-              class="progress-fill"
-              style="width: {(1 - secondsRemaining / totalSeconds) * 100}%"
-            />
-          </div>
-        {/if}
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            style="width: {phaseDuration > 0 ? (1 - phaseSeconds / phaseDuration) * 100 : 0}%"
+          />
+        </div>
       </div>
     {/if}
   </div>
@@ -323,6 +334,37 @@
     font-size: 18px;
     font-weight: 600;
     color: var(--ink);
+  }
+
+  .next-info {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .phase-complete {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .phase-heading {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--forest);
+  }
+
+  .phase-label {
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .phase-subtext {
+    font-size: 13px;
+    color: var(--ink-soft);
   }
 
   .timer-controls {

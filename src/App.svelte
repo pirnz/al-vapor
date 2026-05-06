@@ -132,23 +132,17 @@
             ? t('Add in this order', 'Añade en este orden')
             : t('Select ingredients to start', 'Selecciona ingredientes')}
         </h2>
-        {#if order.length > 0}
-          <button
-            class="timer-badge-btn"
-            on:click={() => showTimer = true}
-            aria-label="Start timer"
-            title={t('Start timer', 'Iniciar temporizador')}
-          >
-            <span class="timer-icon">⏱️</span>
-            <span class="total-badge">{order[0].maxTime} {t('min', 'min')}</span>
-          </button>
-        {/if}
-      </div>
+        </div>
 
       {#if order.length > 0}
         {#each order as item, i (item.ing.id)}
           <ResultRow {item} {lang} index={i} />
         {/each}
+        <div class="start-timer-wrap">
+          <button class="start-timer-btn" on:click={() => showTimer = true}>
+            ▶ {t(`Start Timer · ${order[0].maxTime} min`, `Iniciar · ${order[0].maxTime} min`)}
+          </button>
+        </div>
       {:else}
         <div class="empty-state">
           <span class="empty-icon">💨</span>
@@ -331,27 +325,29 @@
 
   .has-order .results-title { color: white; }
 
-  .timer-badge-btn {
+  .start-timer-wrap {
+    padding: 12px 16px 16px;
+  }
+
+  .start-timer-btn {
     all: unset;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0;
-    transition: transform 0.15s ease;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    height: 44px;
+    background: var(--forest);
+    color: white;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 99px;
+    transition: background 0.15s ease;
   }
 
-  .timer-badge-btn:hover {
-    transform: scale(1.05);
-  }
-
-  .timer-icon {
-    font-size: 16px;
-  }
-
-  .total-badge {
-    background: rgba(255,255,255,0.18); border-radius: 7px; padding: 3px 9px;
-    color: white; font-size: 12px; animation: fade-up 0.2s ease;
+  .start-timer-btn:hover {
+    background: var(--forest-light);
   }
 
   .empty-state {
@@ -369,11 +365,6 @@
   }
 
   footer a { color: var(--forest); text-decoration: none; font-weight: 500; }
-
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
 
   @keyframes slide-down {
     from { opacity: 0; transform: translateY(-6px); }
