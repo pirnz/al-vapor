@@ -132,10 +132,10 @@ Al-Vapor includes a cooking timer with several modern web APIs. These work best 
 - Users can deny (timer still works with just audio)
 - Displays bilingual notifications (EN/ES)
 
-**Web Audio API** — Audio alerts for timer events
+**HTML Audio API** — Bell alarm for timer phase transitions
 - No permissions required
-- Generates beeps at ingredient steps and distinctive completion alarm
-- Completion alarm uses a 5-tone multi-frequency pattern (800, 1000, 1200, 1000, 1400 Hz) repeated twice for clarity
+- Plays `public/bell-ring.mp3` once at the end of each cooking phase
+- Autoplay errors (browser policy) are silently caught — timer still functions
 - Works even if app is not in focus (user must have audio enabled)
 
 ### Browser Compatibility
@@ -331,8 +331,8 @@ jobs:
 **Mobile Testing** (test on real devices if possible):
 - [ ] Ingredient grid responsive on 320px (1 column), 480px (2 columns), desktop (4 columns)
 - [ ] Timer opens and displays correctly
-- [ ] Timer audio alerts work (beeps at each ingredient step and distinctive multi-frequency alarm at completion)
-- [ ] Completion alarm is clearly audible (5-tone pattern: 800, 1000, 1200, 1000, 1400 Hz)
+- [ ] Timer audio alert works (bell rings at end of each phase)
+- [ ] Bell is clearly audible; silently continues if browser autoplay policy blocks it
 - [ ] Notifications permission prompt appears on timer start
 - [ ] Push notifications appear (requires notification permission granted)
 - [ ] Wake Lock prevents screen dimming during timer (Chrome Android 84+, Safari iOS 16.4+)

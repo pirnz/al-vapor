@@ -82,8 +82,9 @@ Reference: [Cooking4Charlie vegetable cooking table](https://www.cooking4charlie
 - **Smart Batching** — Calculates the optimal order and timing to add ingredients so they all finish together
 - **Results Display** — Shows total cook time and step-by-step ingredient sequence
 - **Cooking Timer** — Interactive guided timer with:
-  - ⏱️ Real-time countdown display
-  - 🔔 Audio alerts at each ingredient step and completion
+  - ⏱️ Phase-based countdown — each phase tracks the gap between adding ingredients
+  - 🔔 Bell audio alarm (`bell-ring.mp3`) at each phase end
+  - 📋 "Up next" ingredient display during countdown; "Add now" card after each phase ends
   - 🔔 Push notifications (with permission) for hands-free cooking
   - 📱 Screen wake-lock to prevent phone sleep during cooking
   - 🔄 Reset and pause controls
@@ -106,15 +107,13 @@ new Notification('Add carrots', { icon: '/favicon.png', tag: 'step' });
 ```
 Requests permission on first timer start. Allows hands-free alerts even if the app is not in focus.
 
-**Web Audio API** — Generates audio beeps for audible feedback
+**HTML Audio API** — Plays `bell-ring.mp3` for audible feedback
 ```typescript
-const oscillator = audioCtx.createOscillator();
-oscillator.frequency.value = freq;
+const audio = new Audio('/bell-ring.mp3');
+audio.play().catch(() => {});
 ```
-Distinctive multi-frequency alarm pattern on completion:
-- 5-tone sequence (800, 1000, 1200, 1000, 1400 Hz)
-- Pattern repeats twice for emphasis and clarity
-- Provides unmistakable audio confirmation that cooking is done
+Bell fires exactly once when each cooking phase ends (including the final phase).
+Autoplay policy errors are silently ignored — timer still functions without audio.
 
 All notifications are bilingual (English/Spanish) and respect the language setting.
 
